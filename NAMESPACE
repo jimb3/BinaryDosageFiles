@@ -1,0 +1,3 @@
+useDynLib(BinaryDosageFiles)
+importFrom(Rcpp, evalCpp)
+exportPattern("^[[:alpha:]]+")
