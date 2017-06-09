@@ -9,6 +9,7 @@
 #' Integer or vector of integers indicates SNPs to retrieve data on
 #' @return 
 #' Data frame with chromosome, SNPName, location in base pairs, reference allele, and alternate allele
+#' @export
 SNP_Info <- function(d, x) {
   Chromosome = d$Inputs$MapData$Chromosome[d$SNPID[x]]
   SNPName = d$Inputs$MapData$SNP[d$SNPID[x]]
