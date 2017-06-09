@@ -60,7 +60,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
   short *sp1 = NULL;
   unsigned int oversum, undersum;
   
-  vcfFile.open(vcfFilename);
+  vcfFile.open(vcfFilename.c_str());
   if (!vcfFile.good()) {
     std::cerr << "Unable to open VCF file" << std::endl;
     return 1;
@@ -80,7 +80,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
     iss >> colName;
   }
   
-  famfile.open(outBaseFilename + ".fam");
+  famfile.open((outBaseFilename + ".fam").c_str());
   numSub = 0;
   iss >> riid;
   while (!iss.fail()) {
@@ -95,12 +95,12 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
   sp1 = new short[numSub + numSub + numSub];
   
   numSNPs = 0;
-  bdosefile.open(outBaseFilename + ".bdosage", std::ios::out | std::ios::binary);
+  bdosefile.open((outBaseFilename + ".bdosage").c_str(), std::ios::out | std::ios::binary);
   char header[8] = { 'b', 'o', 's', 'e', 0x0, 0x3, 0x0, 0x1 };
   bdosefile.write(header, 8);
   bdosefile.write((const char *)&numSub, 4);
   
-  bimfile.open(outBaseFilename + ".bim");
+  bimfile.open((outBaseFilename + ".bim").c_str());
   vcfFile >> chromosome >> location >> snpName >> refAllele >> altAllele >> junk >> junk >> junk >> junk;
   
   while (!vcfFile.fail()) {

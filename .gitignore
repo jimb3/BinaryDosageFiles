@@ -13,3 +13,5 @@ vignettes/*.pdf
 *.utf8.md
 *.knit.md
 *.o
+*.so
+.Rproj.user
