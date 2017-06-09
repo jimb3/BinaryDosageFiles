@@ -28,8 +28,8 @@ using namespace Rcpp;
 //' Having to do this can slow down the speed of the routine because of memory
 //' allocations/deallocations.
 //' @return
-//' 0 success
-//' 1 failure
+//' 0 failure
+//' otherwise number of subjects read 
 //' @importFrom Rcpp evalCpp
 //' @useDynLib GxEScanR
 //' @export
@@ -204,6 +204,7 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
   std::streampos x;
   int *y;
 
+  arma::uvec snpIDs;
   arma::mat dosages;
   arma::mat p0;
   arma::mat p1;
@@ -213,6 +214,7 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
   if (bd.ReadFile(bdosageFilename, numSub, mapFilename))
     return inputs;
   
+  snpIDs.zeros(numSNPs);
   dosages.zeros(numSub, numSNPs);
   if (bd.Probabilities() == true) {
     p0.zeros(numSub, numSNPs);
@@ -227,6 +229,7 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
       ret = bd.GetNext();
     if (ret != 0)
       break;
+    snpIDs(ui) = bd.CurrentSNP() + 1;
     dosages.col(ui) = bd.Dosage();
     if (bd.Probabilities() == true) {
       p0.col(ui) = bd.Probs().col(0);
@@ -246,6 +249,8 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
     Rcpp::Named("Chromosome") = bd.MapFile().Chromosome(),
     Rcpp::Named("SNP") = bd.MapFile().SNP(),
     Rcpp::Named("BasePairs") = bd.MapFile().BasePairs(),
+    Rcpp::Named("Allele1") = bd.MapFile().FirstAllele(),
+    Rcpp::Named("Allele2") = bd.MapFile().SecondAllele(),
     Rcpp::Named("Skipped") = bd.MapFile().Skipped() );
   inputs = Rcpp::List::create(
     Rcpp::Named("filename") = bdosageFilename,
@@ -258,6 +263,7 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
   
   if (bd.Probabilities() == true) {
     return Rcpp::List::create(
+      Rcpp::Named("SNPID") = snpIDs,
       Rcpp::Named("Dosages") = dosages,
       Rcpp::Named("NumRead") = numRead,
       Rcpp::Named("P0") = p0,
@@ -266,6 +272,7 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
       Rcpp::Named("Inputs") = inputs);
   }
   return Rcpp::List::create(
+    Rcpp::Named("SNPID") = snpIDs,
     Rcpp::Named("Dosages") = bd.Dosage(),
     Rcpp::Named("NumRead") = numRead,
     Rcpp::Named("Inputs") = inputs);
@@ -301,6 +308,7 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
   unsigned int ui;
   std::streampos x;
   int *y;
+  arma::uvec snpIDs;
   arma::mat dosages;
   arma::mat p0;
   arma::mat p1;
@@ -330,6 +338,7 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
     std::cout << "Failed to reopen" << std::endl;
     return inputs;
   }
+  snpIDs.zeros(numSNPs);
   dosages.zeros(numSub, numSNPs);
   if (bd.Probabilities() == true) {
     p0.zeros(numSub, numSNPs);
@@ -340,6 +349,7 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
   for (ui = 0; ui < numSNPs;) {
     if (bd.GetNext() != 0)
       break;
+    snpIDs(ui) = bd.CurrentSNP() + 1;
     dosages.col(ui) = bd.Dosage();
     if (bd.Probabilities() == true) {
       p0.col(ui) = bd.Probs().col(0);
@@ -366,6 +376,7 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
   
   if (bd.Probabilities() == true) {
     return Rcpp::List::create(
+      Rcpp::Named("SNPID") = snpIDs,
       Rcpp::Named("Dosages") = dosages,
       Rcpp::Named("NumRead") = numRead,
       Rcpp::Named("P0") = p0,
@@ -374,6 +385,7 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
       Rcpp::Named("Inputs") = inputs);
   }
   return Rcpp::List::create(
+    Rcpp::Named("SNPID") = snpIDs,
     Rcpp::Named("Dosages") = bd.Dosage(),
     Rcpp::Named("NumRead") = numRead,
     Rcpp::Named("Inputs") = inputs);
