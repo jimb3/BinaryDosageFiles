@@ -44,3 +44,15 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+
+static const R_CallMethodDef CallEntries[] = {
+    {"BinaryDosageFiles_VCF_to_BinaryDosage", (DL_FUNC) &BinaryDosageFiles_VCF_to_BinaryDosage, 3},
+    {"BinaryDosageFiles_ExtractDosages", (DL_FUNC) &BinaryDosageFiles_ExtractDosages, 4},
+    {"BinaryDosageFiles_ExtractMoreDosages", (DL_FUNC) &BinaryDosageFiles_ExtractMoreDosages, 1},
+    {NULL, NULL, 0}
+};
+
+RcppExport void R_init_BinaryDosageFiles(DllInfo *dll) {
+    R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
+    R_useDynamicSymbols(dll, FALSE);
+}

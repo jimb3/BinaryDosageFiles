@@ -212,7 +212,7 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
   arma::ivec stp;
 
   if (bd.ReadFile(bdosageFilename, numSub, mapFilename))
-    return NULL;
+    return inputs;
   
   dosages.zeros(numSub, numSNPs);
   if (bd.Probabilities() == true) {
@@ -329,7 +329,7 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
 
   if (bd.ReOpen(filename, numSub, skipped, loc, currentSNP, version) != 0) {
     std::cout << "Failed to reopen" << std::endl;
-    return NULL;
+    return inputs;
   }
   dosages.zeros(numSub, numSNPs);
   if (bd.Probabilities() == true) {
