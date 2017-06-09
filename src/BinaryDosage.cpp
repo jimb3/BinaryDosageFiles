@@ -58,7 +58,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
   unsigned int num1;
   short *sdosage = NULL;
   short *sp1 = NULL;
-  unsigned int oversum, undersum;
+  unsigned int oversum;
   
   vcfFile.open(vcfFilename.c_str());
   if (!vcfFile.good()) {
@@ -110,7 +110,6 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
     std::memset(sp1, 0, 3 * numSub * sizeof(short));
     num1 = 0;
     oversum = 0;
-    undersum = 0;
     for (ui = 0; ui < numSub; ++ui) {
       vcfFile >> readLine;
       std::replace(readLine.begin(), readLine.end(), ':', ' ');
@@ -489,7 +488,6 @@ int CBinaryDosage::ReadFile(const std::string &_filename, unsigned int _numSub, 
 
 int CBinaryDosage::ReOpen(const std::string &_filename, unsigned int _numSub, std::vector<bool> &_skipped,
            std::streampos _stp, unsigned int _currentSNP, double _versionNumber) {
-  unsigned int ui;
   m_numSubjects = _numSub;
   m_Skipped = _skipped;
   m_numSNPs = m_Skipped.size();
