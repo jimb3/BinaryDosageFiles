@@ -63,7 +63,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
   vcfFile.open(vcfFilename.c_str());
   if (!vcfFile.good()) {
     std::cerr << "Unable to open VCF file" << std::endl;
-    return 1;
+    return 0;
   }
 
   getline(vcfFile, readLine);
@@ -123,7 +123,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
       ptest = sdosage[ui] / 10000.;
       if (ptest != dosage) {
         std::cerr << "Multiplication failure, dosage\t" << dosage << '\t' << sdosage[ui] << '\t' << p0 << '\t' << p1 << '\t' << p2 << '\t' << ptest << '\t' << sp1[num1] << std::endl;
-        return 1;
+        return 0;
       }
       dosagec = p1 + p2 + p2;
       if ((p2 != 0 && p0 != 0 && p1 != 0) || psum != 1 || dosagec != dosage) {
@@ -132,7 +132,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
         ptest = sp1[num1] / 10000.;
         if (ptest != p1) {
           std::cerr << "Multiplication failure, p1\t" << dosage << '\t' << sdosage[ui] << '\t' << p0 << '\t' << p1 << '\t' << p2 << '\t' << ptest << '\t' << sp1[num1] << std::endl;
-          return 1;
+          return 0;
         }
         if (psum != 1 || dosagec != dosage) {
           ++oversum;
@@ -142,20 +142,22 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
           ptest = sp1[num1] / 10000.;
           if (ptest != p0) {
             std::cerr << "Multiplication failure, p0\t" << dosage << '\t' << sdosage[ui] << '\t' << p0 << '\t' << p1 << '\t' << p2 << '\t' << ptest << '\t' << sp1[num1] << std::endl;
-            return 1;
+            return 0;
           }
           ++num1;
           sp1[num1] = short((p2 + 0.00001) * 10000);
           ptest = sp1[num1] / 10000.;
           if (ptest != p2) {
             std::cerr << "Multiplication failure, p2\t" << dosage << '\t' << sdosage[ui] << '\t' << p0 << '\t' << p1 << '\t' << p2 << '\t' << ptest << '\t' << sp1[num1] << std::endl;
-            return 1;
+            return 0;
           }
         }
         ++num1;
       }
-      if (iss.fail())
+      if (iss.fail()) {
         std::cerr << "Read failure" << std::endl;
+        return 0;
+      }
     }
     if ((numSNPs % 1000) == 0)
       std::cout << numSNPs << std::endl;
@@ -172,7 +174,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
   bdosefile.close();
   bimfile.close();
   vcfFile.close();
-  return 0;
+  return numSub;
 }
 
 //' Function to extract SNPs from a binary dosage file
