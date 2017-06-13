@@ -44,11 +44,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ExtractSNPDosages
+Rcpp::List ExtractSNPDosages(std::string bdosageFilename, std::string mapFilename, unsigned int numSub, std::string snpName, unsigned int flanking);
+RcppExport SEXP BinaryDosageFiles_ExtractSNPDosages(SEXP bdosageFilenameSEXP, SEXP mapFilenameSEXP, SEXP numSubSEXP, SEXP snpNameSEXP, SEXP flankingSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< std::string >::type bdosageFilename(bdosageFilenameSEXP);
+    Rcpp::traits::input_parameter< std::string >::type mapFilename(mapFilenameSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type numSub(numSubSEXP);
+    Rcpp::traits::input_parameter< std::string >::type snpName(snpNameSEXP);
+    Rcpp::traits::input_parameter< unsigned int >::type flanking(flankingSEXP);
+    rcpp_result_gen = Rcpp::wrap(ExtractSNPDosages(bdosageFilename, mapFilename, numSub, snpName, flanking));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"BinaryDosageFiles_VCF_to_BinaryDosage", (DL_FUNC) &BinaryDosageFiles_VCF_to_BinaryDosage, 3},
     {"BinaryDosageFiles_ExtractDosages", (DL_FUNC) &BinaryDosageFiles_ExtractDosages, 4},
     {"BinaryDosageFiles_ExtractMoreDosages", (DL_FUNC) &BinaryDosageFiles_ExtractMoreDosages, 1},
+    {"BinaryDosageFiles_ExtractSNPDosages", (DL_FUNC) &BinaryDosageFiles_ExtractSNPDosages, 5},
     {NULL, NULL, 0}
 };
 

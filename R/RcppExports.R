@@ -66,3 +66,27 @@ ExtractMoreDosages <- function(inputs) {
     .Call('BinaryDosageFiles_ExtractMoreDosages', PACKAGE = 'BinaryDosageFiles', inputs)
 }
 
+#' Function to extract a SNP from a binary dosage file
+#' 
+#' Function to extract a SNP from a binary dosage file
+#' 
+#' @param bdosageFilename
+#' Name of binary dosage file
+#' @param mapFilename
+#' Name of map file associated with dosage file
+#' @param numSub
+#' Number of subjects with data in dosage file
+#' @param snpName
+#' Name of SNP to extract
+#' @param flanking
+#' Number of flanking SNPs on either side to include
+#' @return
+#' List with a vector of dosages and a matrix of probabilities
+#' and a list of the input values
+#' @importFrom Rcpp evalCpp
+#' @useDynLib GxEScanR
+#' @export
+ExtractSNPDosages <- function(bdosageFilename, mapFilename, numSub, snpName, flanking) {
+    .Call('BinaryDosageFiles_ExtractSNPDosages', PACKAGE = 'BinaryDosageFiles', bdosageFilename, mapFilename, numSub, snpName, flanking)
+}
+

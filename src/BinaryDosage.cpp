@@ -10,6 +10,21 @@
 
 using namespace Rcpp;
 
+void SaveSNP(CBinaryDosage &bd, unsigned int n, arma::mat &d, arma::mat &p0, arma::mat &p1, arma::mat &p2,
+             std::vector<std::string> &chromosome, std::vector<std::string> &snpName, std::vector<int> &basepairs,
+             std::vector<std::string> &allele1, std::vector<std::string> &allele2) {
+  d.col(n) = bd.Dosage();
+  if (bd.Probabilities()) {
+    p0.col(n) = bd.Probs().col(0);
+    p1.col(n) = bd.Probs().col(1);
+    p2.col(n) = bd.Probs().col(2);
+  }
+  chromosome.push_back(bd.Chromosome());
+  snpName.push_back(bd.SNPName());
+  basepairs.push_back(bd.Location());
+  allele1.push_back(bd.FirstAllele());
+  allele2.push_back(bd.SecondAllele());
+}
 //' Function to convert a VCF file to a binary dosage file for GxEScan
 //' 
 //' Function to convert a VCF file to a binary dosage file for GxEScan. 
@@ -335,7 +350,7 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
   lp = (int *)&loc;
   for (ui = 0; ui < sizeof(std::streampos) / sizeof(int); ++ui)
     lp[ui] = iLocation(ui);
-
+  
   if (bd.ReOpen(filename, numSub, skipped, loc, currentSNP, version) != 0) {
     std::cout << "Failed to reopen" << std::endl;
     return inputs;
@@ -391,6 +406,100 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
     Rcpp::Named("Dosages") = bd.Dosage(),
     Rcpp::Named("NumRead") = numRead,
     Rcpp::Named("Inputs") = inputs);
+}
+
+//' Function to extract a SNP from a binary dosage file
+//' 
+//' Function to extract a SNP from a binary dosage file
+//' 
+//' @param bdosageFilename
+//' Name of binary dosage file
+//' @param mapFilename
+//' Name of map file associated with dosage file
+//' @param numSub
+//' Number of subjects with data in dosage file
+//' @param snpName
+//' Name of SNP to extract
+//' @param flanking
+//' Number of flanking SNPs on either side to include
+//' @return
+//' List with a vector of dosages and a matrix of probabilities
+//' and a list of the input values
+//' @importFrom Rcpp evalCpp
+//' @useDynLib GxEScanR
+//' @export
+// [[Rcpp::export]]
+Rcpp::List ExtractSNPDosages(std::string bdosageFilename, std::string mapFilename, unsigned int numSub, std::string snpName, unsigned int flanking) {
+  CBinaryDosage bd;
+  Rcpp::List dosages;
+  unsigned int ui, uj, uk;
+  unsigned int firstSNP;
+  unsigned int lastSNP;
+  unsigned int snpNum;
+  unsigned numOut;
+  Rcpp::DataFrame df;
+  std::vector<std::string> chromosome;
+  std::vector<std::string> snp;
+  std::vector<int> location;
+  std::vector<std::string> allele1;
+  std::vector<std::string> allele2;
+  
+  arma::mat d;
+  arma::mat p0;
+  arma::mat p1;
+  arma::mat p2;
+  
+  if (bd.ReadFile(bdosageFilename, numSub, mapFilename))
+    return dosages;
+  
+  uj = 0;
+  for (ui = 0; ui < bd.MapFile().NumSNPs(); ++ui) {
+    if (bd.MapFile().Skipped()[ui] == false)
+      ++uj;
+    if (bd.MapFile().SNP()[ui] == snpName)
+      break;
+  }
+  
+  if (ui == bd.MapFile().NumSNPs())
+    return dosages;
+  if (bd.MapFile().Skipped()[ui] == true)
+    return dosages;
+  
+  snpNum = uj;
+
+  firstSNP = snpNum < flanking ? 0 : snpNum - flanking;
+  lastSNP = snpNum + flanking  + 1 > bd.MapFile().NumUsed() ? bd.MapFile().NumUsed() : snpNum + flanking + 1;
+
+  d.zeros(numSub, lastSNP - firstSNP);
+  if (bd.Probabilities()) {
+    p0.zeros(numSub, lastSNP - firstSNP);
+    p1.zeros(numSub, lastSNP - firstSNP);
+    p2.zeros(numSub, lastSNP - firstSNP);
+  }
+  
+  bd.GetFirst();
+  for (ui = 0; ui < firstSNP; ++ui)
+    bd.GetNext();
+  
+  uj = 0;
+  for (uj = 0; ui < lastSNP; ++ui, ++uj, bd.GetNext())
+    SaveSNP(bd, uj, d, p0, p1, p2, chromosome, snp, location, allele1, allele2);
+
+  df = DataFrame::create(_["Chromosome"] = chromosome,
+                         _["SNPName"] = snp,
+                         _["BasePairs"] = location,
+                         _["Allele1"] = allele1,
+                         _["Allele2"] = allele2);
+  if (bd.Probabilities())
+    dosages = Rcpp::List::create(Named("Dosage") = d,
+                                 Named("P0") = p0,
+                                 Named("P1") = p1,
+                                 Named("P2") = p2,
+                                 Named("SNPInfo") = df);
+  else
+  dosages = Rcpp::List::create(Named("Dosage") = d,
+                               Named("SNPInfo") = df);
+  return dosages;
 }
 
 // ********************************************************
