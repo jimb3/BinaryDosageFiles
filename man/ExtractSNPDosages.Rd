@@ -18,8 +18,12 @@ ExtractSNPDosages(bdosageFilename, mapFilename, numSub, snpName, flanking)
 \item{flanking}{Number of flanking SNPs on either side to include}
 }
 \value{
-List with a vector of dosages and a matrix of probabilities
-and a list of the input values
+A list
+\item{Dosage}{Matrix of dosage values}
+\item{P0}{Matrix of probabilities that g = 0}
+\item{P1}{Matrix of probabilities that g = 1}
+\item{P2}{Matrix of probabilities that g = 2}
+\item{SNPInfo}{ Data frame with information about SNPs output }
 }
 \description{
 Function to extract a SNP from a binary dosage file

@@ -22,7 +22,7 @@
 #' 0 failure
 #' otherwise number of subjects read 
 #' @importFrom Rcpp evalCpp
-#' @useDynLib GxEScanR
+#' @useDynLib BinaryDosageFiles
 #' @export
 VCF_to_BinaryDosage <- function(vcfFilename, outBaseFilename, initSub) {
     .Call('BinaryDosageFiles_VCF_to_BinaryDosage', PACKAGE = 'BinaryDosageFiles', vcfFilename, outBaseFilename, initSub)
@@ -44,7 +44,7 @@ VCF_to_BinaryDosage <- function(vcfFilename, outBaseFilename, initSub) {
 #' List with a vector of dosages and a matrix of probabilities
 #' and a list of the input values
 #' @importFrom Rcpp evalCpp
-#' @useDynLib GxEScanR
+#' @useDynLib BinaryDosageFiles
 #' @export
 ExtractDosages <- function(bdosageFilename, mapFilename, numSub, numSNPs) {
     .Call('BinaryDosageFiles_ExtractDosages', PACKAGE = 'BinaryDosageFiles', bdosageFilename, mapFilename, numSub, numSNPs)
@@ -60,7 +60,7 @@ ExtractDosages <- function(bdosageFilename, mapFilename, numSub, numSNPs) {
 #' List with a vector of dosages and a matrix of probabilities
 #' and a list of the input values
 #' @importFrom Rcpp evalCpp
-#' @useDynLib GxEScanR
+#' @useDynLib BinaryDosageFiles
 #' @export
 ExtractMoreDosages <- function(inputs) {
     .Call('BinaryDosageFiles_ExtractMoreDosages', PACKAGE = 'BinaryDosageFiles', inputs)
@@ -80,11 +80,9 @@ ExtractMoreDosages <- function(inputs) {
 #' Name of SNP to extract
 #' @param flanking
 #' Number of flanking SNPs on either side to include
-#' @return
-#' List with a vector of dosages and a matrix of probabilities
-#' and a list of the input values
+#' @return A list
 #' @importFrom Rcpp evalCpp
-#' @useDynLib GxEScanR
+#' @useDynLib BinaryDosageFiles
 #' @export
 ExtractSNPDosages <- function(bdosageFilename, mapFilename, numSub, snpName, flanking) {
     .Call('BinaryDosageFiles_ExtractSNPDosages', PACKAGE = 'BinaryDosageFiles', bdosageFilename, mapFilename, numSub, snpName, flanking)

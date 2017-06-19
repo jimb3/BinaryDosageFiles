@@ -46,7 +46,7 @@ void SaveSNP(CBinaryDosage &bd, unsigned int n, arma::mat &d, arma::mat &p0, arm
 //' 0 failure
 //' otherwise number of subjects read 
 //' @importFrom Rcpp evalCpp
-//' @useDynLib GxEScanR
+//' @useDynLib BinaryDosageFiles
 //' @export
 // [[Rcpp::export]]
 int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, unsigned int initSub) {
@@ -208,7 +208,7 @@ int VCF_to_BinaryDosage(std::string vcfFilename, std::string outBaseFilename, un
 //' List with a vector of dosages and a matrix of probabilities
 //' and a list of the input values
 //' @importFrom Rcpp evalCpp
-//' @useDynLib GxEScanR
+//' @useDynLib BinaryDosageFiles
 //' @export
 // [[Rcpp::export]]
 Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, unsigned int numSub, unsigned int numSNPs) {
@@ -305,7 +305,7 @@ Rcpp::List ExtractDosages(std::string bdosageFilename, std::string mapFilename, 
 //' List with a vector of dosages and a matrix of probabilities
 //' and a list of the input values
 //' @importFrom Rcpp evalCpp
-//' @useDynLib GxEScanR
+//' @useDynLib BinaryDosageFiles
 //' @export
 // [[Rcpp::export]]
 Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
@@ -422,11 +422,9 @@ Rcpp::List ExtractMoreDosages(Rcpp::List inputs) {
 //' Name of SNP to extract
 //' @param flanking
 //' Number of flanking SNPs on either side to include
-//' @return
-//' List with a vector of dosages and a matrix of probabilities
-//' and a list of the input values
+//' @return A list
 //' @importFrom Rcpp evalCpp
-//' @useDynLib GxEScanR
+//' @useDynLib BinaryDosageFiles
 //' @export
 // [[Rcpp::export]]
 Rcpp::List ExtractSNPDosages(std::string bdosageFilename, std::string mapFilename, unsigned int numSub, std::string snpName, unsigned int flanking) {
